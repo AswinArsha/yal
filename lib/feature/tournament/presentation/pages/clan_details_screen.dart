@@ -1147,7 +1147,7 @@ class _ClanDetailsScreenState extends State<ClanDetailsScreen> {
             ),
 
             // Floating Navigation
-            const FloatingNavWidget(),
+            const FloatingNavWidget(currentTabIndex: 3),
           ],
         ),
       ),

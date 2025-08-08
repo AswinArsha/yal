@@ -501,14 +501,20 @@ class _CreateClanScreenState extends State<CreateClanScreen> {
                                     borderRadius: BorderRadius.circular(100.r),
                                     color: const Color(0x12FFFFFF),
                                   ),
-                                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 12.h),
+                                   padding: const EdgeInsets.only(
+          top: 9, 
+          bottom: 9, 
+          left: 10, 
+          right: 10
+        ),
                                   margin: EdgeInsets.only(right: 165.w),
                                   child: Container(
-                                    width: 15.w,
-                                    height: 12.w,
+                                     width: 15,
+              height: 14,
                                   child: SvgPicture.asset(
   "assets/images/tournament/clans/Arrow-Left.svg",
   fit: BoxFit.fill,
+   
 ),
 
                                   ),

@@ -627,7 +627,7 @@ SizedBox(height: 100.h), // Bottom padding for scroll // Bottom padding for scro
                   ],
                 ),
               ),
-              const FloatingNavWidget(),
+              const FloatingNavWidget(currentTabIndex: -1),
             ],
           ),
         ],

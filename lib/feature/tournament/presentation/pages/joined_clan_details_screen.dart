@@ -1441,7 +1441,7 @@ Padding(
           ),
           
           // Floating Navigation
-          const FloatingNavWidget(),
+          const FloatingNavWidget(currentTabIndex: 3),
           
 // Animated Chat Drawer Toggle Button - Synchronized with drawer
 AnimatedPositioned(

@@ -738,7 +738,7 @@ class MyClansScreen extends StatelessWidget {
                 ),
               ],
             ),
-            const FloatingNavWidget(),
+            const FloatingNavWidget(currentTabIndex: 3),
           ],
         ),
       ),

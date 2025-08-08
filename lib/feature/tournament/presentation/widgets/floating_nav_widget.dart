@@ -9,7 +9,9 @@ import 'package:yalgamers/feature/tournament/presentation/pages/tournament_list_
 import 'dart:ui';
 
 class FloatingNavWidget extends StatefulWidget {
-  const FloatingNavWidget({super.key});
+  final int currentTabIndex;
+  
+  const FloatingNavWidget({super.key, this.currentTabIndex = 0});
 
   @override
   State<FloatingNavWidget> createState() => _FloatingNavWidgetState();
@@ -62,7 +64,9 @@ class _FloatingNavWidgetState extends State<FloatingNavWidget>
     }
   }
 
-Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap) {
+Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap, {bool isActive = false, Color? activeColor, Color? activeIconColor}) {
+  final Color bgColor = isActive && activeColor != null ? activeColor : backgroundColor;
+  
   return InkWell(
     onTap: onTap,
     child: Container(
@@ -70,7 +74,7 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
       height: 40,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(833),
-        color: backgroundColor,
+        color: bgColor,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(833),
@@ -79,11 +83,12 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(833),
-              color: backgroundColor, // This creates the colored overlay
+              color: bgColor, // This creates the colored overlay
             ),
             child: SvgPicture.asset(
               svgPath,
               fit: BoxFit.fill,
+              color: isActive && activeIconColor != null ? activeIconColor : null,
             ),
           ),
         ),
@@ -166,24 +171,56 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
                                       _toggleFloatingNav();
                                       Navigator.of(context).push(
                                         MaterialPageRoute(
-                                          builder: (context) => const TournamentListScreen(initialTabIndex: 1),
+                                          builder: (context) => const TournamentListScreen(initialTabIndex: 0),
                                         ),
                                       );
                                     },
+                                    isActive: widget.currentTabIndex == 0,
+                                    activeColor: const Color(0xFF103421),
+                                    activeIconColor: const Color(0xFF40F293),
                                   ),
                                   const SizedBox(height: 10),
-                                  _buildNavButton(
-                                    'assets/bottom_nav/clan_nav.svg',
-                                    const Color(0x26FDEB56),
-                                    () {
-                                      _toggleFloatingNav();
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => const MyClansScreen(),
-                                        ),
-                                      );
-                                    },
-                                  ),
+                               GestureDetector(
+  onTap: () {
+    _toggleFloatingNav();
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const MyClansScreen(),
+      ),
+    );
+  },
+  child: Container(
+    width: 40,
+    height: 40,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(833),
+      color: widget.currentTabIndex == 3 
+        ? const Color(0xFFFDEB56) 
+        : const Color(0x26FDEB56),
+    ),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(833),
+      child: BackdropFilter( // Added BackdropFilter
+        filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+        child: Container( // Added nested Container for overlay
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(833),
+            color: widget.currentTabIndex == 3 
+              ? const Color(0xFFFDEB56) 
+              : const Color(0x26FDEB56),
+          ),
+          child: SvgPicture.asset(
+            'assets/bottom_nav/clan_nav.svg',
+            fit: BoxFit.fill, // Added fit property to match others
+            color: widget.currentTabIndex == 3 
+              ? const Color(0xFF302D12) 
+              : null,
+          ),
+        ),
+      ),
+    ),
+  ),
+)
                                 ],
                               ),
                             ),
@@ -199,10 +236,13 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
                                       _toggleFloatingNav();
                                       Navigator.of(context).push(
                                         MaterialPageRoute(
-                                          builder: (context) => const TournamentListScreen(initialTabIndex: 0),
+                                          builder: (context) => const TournamentListScreen(initialTabIndex: 1),
                                         ),
                                       );
                                     },
+                                    isActive: widget.currentTabIndex == 1,
+                                    activeColor: const Color(0xFF457CF1),
+                                    activeIconColor: Colors.white,
                                   ),
                                   const SizedBox(height: 12),
                                   _buildCenterButton(),
@@ -214,10 +254,9 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
                               margin: const EdgeInsets.only(top: 32),
                               child: Column(
                                 children: [
-                                  _buildNavButton(
-                                    'assets/bottom_nav/stat_nav.svg',
-                                    const Color(0x26FFBF66),
-                                    () {
+                                  // Stat nav button with explicit active state for leaderboard
+                                  GestureDetector(
+                                    onTap: () {
                                       _toggleFloatingNav();
                                       Navigator.of(context).push(
                                         MaterialPageRoute(
@@ -225,20 +264,80 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
                                         ),
                                       );
                                     },
+                                    child: Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(833),
+                                        color: widget.currentTabIndex == -1 
+                                          ? const Color(0xFF322615) 
+                                          : const Color(0x26FFBF66),
+                                      ),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(833),
+                                        child: BackdropFilter(
+                                          filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(833),
+                                              color: widget.currentTabIndex == -1 
+                                                ? const Color(0xFF322615) 
+                                                : const Color(0x26FFBF66),
+                                            ),
+                                            child: SvgPicture.asset(
+                                              'assets/bottom_nav/stat_nav.svg',
+                                              fit: BoxFit.fill,
+                                              color: widget.currentTabIndex == -1 
+                                                ? const Color(0xFFFFBF66) 
+                                                : null,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                   const SizedBox(height: 10),
-                                  _buildNavButton(
-                                    'assets/bottom_nav/badge_nav.svg',
-                                    const Color(0x26FF6BDD),
-                                    () {
-                                      _toggleFloatingNav();
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => const MyTournamentsScreen(),
-                                        ),
-                                      );
-                                    },
-                                  ),
+                                  GestureDetector(
+  onTap: () {
+    _toggleFloatingNav();
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const MyTournamentsScreen(),
+      ),
+    );
+  },
+  child: Container(
+    width: 40,
+    height: 40,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(833), // Changed from 20 to 833 to match others
+      color: widget.currentTabIndex == 2 
+        ? const Color(0xFFFF6BDD) 
+        : const Color(0x26FF6BDD),
+    ),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(833), // Added ClipRRect wrapper
+      child: BackdropFilter( // Added BackdropFilter
+        filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(833),
+            color: widget.currentTabIndex == 2 
+              ? const Color(0xFFFF6BDD) 
+              : const Color(0x26FF6BDD),
+          ),
+          child: SvgPicture.asset(
+            'assets/bottom_nav/badge_nav.svg',
+            fit: BoxFit.fill, // Added fit property to match others
+            color: widget.currentTabIndex == 2 
+              ? const Color(0xFFFFFFFF) 
+              : null,
+          ),
+        ),
+      ),
+    ),
+  ),
+),
                                 ],
                               ),
                             ),

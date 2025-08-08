@@ -3,10 +3,23 @@ import 'package:yalgamers/core/theme/text_style.dart';
 import 'package:yalgamers/feature/tournament/presentation/pages/tournament_screen.dart';
 import 'package:yalgamers/feature/tournament/presentation/widgets/floating_nav_widget.dart';
 
-class TournamentListScreen extends StatelessWidget {
+class TournamentListScreen extends StatefulWidget {
   final int initialTabIndex;
   
   const TournamentListScreen({super.key, this.initialTabIndex = 0});
+
+  @override
+  State<TournamentListScreen> createState() => _TournamentListScreenState();
+}
+
+class _TournamentListScreenState extends State<TournamentListScreen> {
+  late int currentTabIndex;  
+  
+  @override
+  void initState() {
+    super.initState();
+    currentTabIndex = widget.initialTabIndex;
+  }
 
  @override
 Widget build(BuildContext context) {
@@ -17,7 +30,7 @@ Widget build(BuildContext context) {
       title: Text(
         "Tournaments",
         style: AppTextStyles.small(
-            color: Colors.white, size: 22, fontWeight: FontWeight.bold),
+            color: Colors.white, size: 20),
       ),
       centerTitle: false,
       elevation: 0,
@@ -35,7 +48,14 @@ Widget build(BuildContext context) {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              TournamentTabBar(initialIndex: initialTabIndex),
+              TournamentTabBar(
+                initialIndex: currentTabIndex,
+                onTabChanged: (index) {
+                  setState(() {
+                    currentTabIndex = index;
+                  });
+                },
+              ),
               const SizedBox(height: 16),
               Expanded(
                 child: ListView(
@@ -78,7 +98,7 @@ Widget build(BuildContext context) {
         ),
         
         // Add FloatingNavWidget as overlay
-        const FloatingNavWidget(),
+        FloatingNavWidget(currentTabIndex: currentTabIndex),
       ],
     ),
   );
@@ -88,8 +108,9 @@ Widget build(BuildContext context) {
 
 class TournamentTabBar extends StatefulWidget {
   final int initialIndex;
+  final Function(int)? onTabChanged;
   
-  const TournamentTabBar({super.key, this.initialIndex = 0});
+  const TournamentTabBar({super.key, this.initialIndex = 0, this.onTabChanged});
 
   @override
   State<TournamentTabBar> createState() => _TournamentTabBarState();
@@ -125,8 +146,10 @@ class _TournamentTabBarState extends State<TournamentTabBar> {
               onTap: () {
                 setState(() {
                   selectedIndex = index;
-                  // Handle tab logic here if needed
                 });
+                if (widget.onTabChanged != null) {
+                  widget.onTabChanged!(index);
+                }
               },
               child: Container(
                 decoration: BoxDecoration(

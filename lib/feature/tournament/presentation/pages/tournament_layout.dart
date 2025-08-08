@@ -229,7 +229,7 @@ class _TournamentLayoutScreenState extends State<TournamentLayoutScreen> {
             ),
           ),
 
-          const FloatingNavWidget(),
+          const FloatingNavWidget(currentTabIndex: -1),
         ],
       ),
     );

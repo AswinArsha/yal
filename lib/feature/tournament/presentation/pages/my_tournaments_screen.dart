@@ -134,7 +134,7 @@ Widget build(BuildContext context) {
         ),
         
         // Add FloatingNavWidget as overlay
-        const FloatingNavWidget(),
+        const FloatingNavWidget(currentTabIndex: 2),
       ],
     ),
     ),
