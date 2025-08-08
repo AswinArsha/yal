@@ -70,8 +70,7 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
   return InkWell(
     onTap: onTap,
     child: Container(
-      width: 40,
-      height: 40,
+     
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(833),
         color: bgColor,
@@ -85,10 +84,14 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
               borderRadius: BorderRadius.circular(833),
               color: bgColor, // This creates the colored overlay
             ),
-            child: SvgPicture.asset(
-              svgPath,
-              fit: BoxFit.fill,
-              color: isActive && activeIconColor != null ? activeIconColor : null,
+     child: SizedBox(
+  width: 48,
+  height: 48,
+              child: SvgPicture.asset(
+                svgPath,
+                fit: BoxFit.contain, // Changed from fill to contain for better scaling
+                color: isActive && activeIconColor != null ? activeIconColor : null,
+              ),
             ),
           ),
         ),
@@ -131,8 +134,7 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
                 onTap: _toggleFloatingNav,
                 child: Container(
                   color: Colors.black.withOpacity(0.5 * _opacityAnimation.value),
-                  width: double.infinity,
-                  height: double.infinity,
+                
                 ),
               );
             },
@@ -153,8 +155,8 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
                       opacity: _opacityAnimation.value,
                       child: Container(
                         key: const ValueKey('nav_bar'),
-                        width: 220.w,
-                        height: 220.h,
+                        width: 240.w, 
+                        height: 240.h, 
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -190,8 +192,7 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
     );
   },
   child: Container(
-    width: 40,
-    height: 40,
+    
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(833),
       color: widget.currentTabIndex == 3 
@@ -209,13 +210,17 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
               ? const Color(0xFFFDEB56) 
               : const Color(0x26FDEB56),
           ),
-          child: SvgPicture.asset(
-            'assets/bottom_nav/clan_nav.svg',
-            fit: BoxFit.fill, // Added fit property to match others
-            color: widget.currentTabIndex == 3 
-              ? const Color(0xFF302D12) 
-              : null,
-          ),
+         child: SizedBox(
+  width: 48,
+  height: 48,
+  child: SvgPicture.asset(
+    'assets/bottom_nav/clan_nav.svg',
+    fit: BoxFit.contain,
+    color: widget.currentTabIndex == 3 
+      ? const Color(0xFF302D12) 
+      : null,
+  ),
+),
         ),
       ),
     ),
@@ -226,12 +231,15 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
                             ),
                             // Center Column
                             Container(
+                              
                               margin: const EdgeInsets.only(right: 6),
                               child: Column(
                                 children: [
                                   _buildNavButton(
                                     'assets/bottom_nav/sword_nav.svg',
+                                    
                                     const Color(0x26457BF1),
+                                    
                                     () {
                                       _toggleFloatingNav();
                                       Navigator.of(context).push(
@@ -265,8 +273,7 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
                                       );
                                     },
                                     child: Container(
-                                      width: 40,
-                                      height: 40,
+               
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(833),
                                         color: widget.currentTabIndex == -1 
@@ -284,12 +291,17 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
                                                 ? const Color(0xFF322615) 
                                                 : const Color(0x26FFBF66),
                                             ),
-                                            child: SvgPicture.asset(
-                                              'assets/bottom_nav/stat_nav.svg',
-                                              fit: BoxFit.fill,
-                                              color: widget.currentTabIndex == -1 
-                                                ? const Color(0xFFFFBF66) 
-                                                : null,
+                                            child: SizedBox(
+                                          
+  width: 48,
+  height:48,
+                                              child: SvgPicture.asset(
+                                                'assets/bottom_nav/stat_nav.svg',
+                                                fit: BoxFit.contain, // Changed from fill to contain
+                                                color: widget.currentTabIndex == -1 
+                                                  ? const Color(0xFFFFBF66) 
+                                                  : null,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -307,8 +319,7 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
     );
   },
   child: Container(
-    width: 40,
-    height: 40,
+ 
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(833), // Changed from 20 to 833 to match others
       color: widget.currentTabIndex == 2 
@@ -326,12 +337,16 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
               ? const Color(0xFFFF6BDD) 
               : const Color(0x26FF6BDD),
           ),
-          child: SvgPicture.asset(
-            'assets/bottom_nav/badge_nav.svg',
-            fit: BoxFit.fill, // Added fit property to match others
-            color: widget.currentTabIndex == 2 
-              ? const Color(0xFFFFFFFF) 
-              : null,
+        child: SizedBox(
+  width: 48,
+  height: 48, // Added padding
+            child: SvgPicture.asset(
+              'assets/bottom_nav/badge_nav.svg',
+              fit: BoxFit.contain, // Changed from fill to contain
+              color: widget.currentTabIndex == 2 
+                ? const Color(0xFFFFFFFF) 
+                : null,
+            ),
           ),
         ),
       ),
