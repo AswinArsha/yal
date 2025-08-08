@@ -64,58 +64,59 @@ class _FloatingNavWidgetState extends State<FloatingNavWidget>
     }
   }
 
-Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap, {bool isActive = false, Color? activeColor, Color? activeIconColor}) {
-  final Color bgColor = isActive && activeColor != null ? activeColor : backgroundColor;
-  
-  return InkWell(
-    onTap: onTap,
-    child: Container(
-     
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(833),
-        color: bgColor,
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(833),
+  // Pre-rendered blur widget for each icon position
+  Widget _buildPreRenderedBlur({required double left, required double top}) {
+    return Positioned(
+      left: left,
+      top: top,
+      child: ClipOval(
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+          filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
           child: Container(
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(833),
-              color: bgColor, // This creates the colored overlay
-            ),
-     child: SizedBox(
-  width: 48,
-  height: 48,
-              child: SvgPicture.asset(
-                svgPath,
-                fit: BoxFit.contain, // Changed from fill to contain for better scaling
-                color: isActive && activeIconColor != null ? activeIconColor : null,
-              ),
+              shape: BoxShape.circle,
+              color: Colors.white.withOpacity(0.1),
             ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
+
+  Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap, {bool isActive = false, Color? activeColor, Color? activeIconColor}) {
+    final Color bgColor = isActive && activeColor != null ? activeColor : backgroundColor;
+    
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(833),
+          color: bgColor,
+        ),
+        child: SvgPicture.asset(
+          svgPath,
+          fit: BoxFit.contain,
+          color: isActive && activeIconColor != null ? activeIconColor : null,
+        ),
+      ),
+    );
+  }
 
   Widget _buildCenterButton() {
     return InkWell(
       onTap: _toggleFloatingNav,
       child: Container(
-      
-        
-        child: Container(
-         
-          width: 48,
-          height: 48,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(1000),
-            child: SvgPicture.asset(
-              'assets/bottom_nav/cancel_nav.svg',
-              fit: BoxFit.fill,
-            ),
+        width: 48,
+        height: 48,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(1000),
+          child: SvgPicture.asset(
+            'assets/bottom_nav/cancel_nav.svg',
+            fit: BoxFit.fill,
           ),
         ),
       ),
@@ -133,11 +134,45 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
               return GestureDetector(
                 onTap: _toggleFloatingNav,
                 child: Container(
-                  color: Colors.black.withOpacity(0.5 * _opacityAnimation.value),
-                
+                  color: Colors.black.withOpacity(0.7 * _opacityAnimation.value),
                 ),
               );
             },
+          ),
+
+        // Pre-rendered blur layer - always present but controlled by opacity
+        if (isFloatingNavVisible)
+          Positioned(
+            bottom: -70.h,
+            left: 0,
+            right: 0,
+            child: AnimatedBuilder(
+              animation: _opacityAnimation,
+              builder: (context, child) {
+                return Center(
+                  child: Transform.scale(
+                    scale: _scaleAnimation.value,
+                    child: Opacity(
+                      opacity: _opacityAnimation.value,
+                      child: Container(
+                        width: 240.w,
+                        height: 240.h,
+                        child: Stack(
+                          children: [
+                            // Pre-rendered blur spots for each icon position
+                            _buildPreRenderedBlur(left: 40.w, top: 32.h), // Map icon
+                            _buildPreRenderedBlur(left: 40.w, top: 90.h), // Clan icon
+                            _buildPreRenderedBlur(left: 96.w, top: 0.h),  // Sword icon
+                            _buildPreRenderedBlur(left: 150.w, top: 32.h), // Stats icon
+                            _buildPreRenderedBlur(left: 151.w, top: 90.h), // Badge icon
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
 
         if (isFloatingNavVisible)
@@ -156,7 +191,7 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
                       child: Container(
                         key: const ValueKey('nav_bar'),
                         width: 240.w, 
-                        height: 240.h, 
+                        height: 240.h,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -178,68 +213,48 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
                                       );
                                     },
                                     isActive: widget.currentTabIndex == 0,
-                                    activeColor: const Color(0xFF103421),
-                                    activeIconColor: const Color(0xFF40F293),
+                                    activeColor: const Color(0xFF40F293),
+                                    activeIconColor: Colors.white,
                                   ),
                                   const SizedBox(height: 10),
-                               GestureDetector(
-  onTap: () {
-    _toggleFloatingNav();
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const MyClansScreen(),
-      ),
-    );
-  },
-  child: Container(
-    
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(833),
-      color: widget.currentTabIndex == 3 
-        ? const Color(0xFFFDEB56) 
-        : const Color(0x26FDEB56),
-    ),
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(833),
-      child: BackdropFilter( // Added BackdropFilter
-        filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
-        child: Container( // Added nested Container for overlay
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(833),
-            color: widget.currentTabIndex == 3 
-              ? const Color(0xFFFDEB56) 
-              : const Color(0x26FDEB56),
-          ),
-         child: SizedBox(
-  width: 48,
-  height: 48,
-  child: SvgPicture.asset(
-    'assets/bottom_nav/clan_nav.svg',
-    fit: BoxFit.contain,
-    color: widget.currentTabIndex == 3 
-      ? const Color(0xFF302D12) 
-      : null,
-  ),
-),
-        ),
-      ),
-    ),
-  ),
-)
+                                  GestureDetector(
+                                    onTap: () {
+                                      _toggleFloatingNav();
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => const MyClansScreen(),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      width: 48,
+                                      height: 48,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(833),
+                                        color: widget.currentTabIndex == 3 
+                                          ? const Color(0xFFFDEB56) 
+                                          : const Color(0x26FDEB56),
+                                      ),
+                                      child: SvgPicture.asset(
+                                        'assets/bottom_nav/clan_nav.svg',
+                                        fit: BoxFit.contain,
+                                        color: widget.currentTabIndex == 3 
+                                          ? const Color(0xFF302D12) 
+                                          : null,
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
                             // Center Column
                             Container(
-                              
                               margin: const EdgeInsets.only(right: 6),
                               child: Column(
                                 children: [
                                   _buildNavButton(
                                     'assets/bottom_nav/sword_nav.svg',
-                                    
                                     const Color(0x26457BF1),
-                                    
                                     () {
                                       _toggleFloatingNav();
                                       Navigator.of(context).push(
@@ -262,7 +277,7 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
                               margin: const EdgeInsets.only(top: 32),
                               child: Column(
                                 children: [
-                                  // Stat nav button with explicit active state for leaderboard
+                                  // Stat nav button
                                   GestureDetector(
                                     onTap: () {
                                       _toggleFloatingNav();
@@ -273,86 +288,51 @@ Widget _buildNavButton(String svgPath, Color backgroundColor, VoidCallback onTap
                                       );
                                     },
                                     child: Container(
-               
+                                      width: 48,
+                                      height: 48,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(833),
                                         color: widget.currentTabIndex == -1 
-                                          ? const Color(0xFF322615) 
+                                          ? const Color(0xFFFFBF66) 
                                           : const Color(0x26FFBF66),
                                       ),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(833),
-                                        child: BackdropFilter(
-                                          filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(833),
-                                              color: widget.currentTabIndex == -1 
-                                                ? const Color(0xFF322615) 
-                                                : const Color(0x26FFBF66),
-                                            ),
-                                            child: SizedBox(
-                                          
-  width: 48,
-  height:48,
-                                              child: SvgPicture.asset(
-                                                'assets/bottom_nav/stat_nav.svg',
-                                                fit: BoxFit.contain, // Changed from fill to contain
-                                                color: widget.currentTabIndex == -1 
-                                                  ? const Color(0xFFFFBF66) 
-                                                  : null,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
+                                      child: SvgPicture.asset(
+                                        'assets/bottom_nav/stat_nav.svg',
+                                        fit: BoxFit.contain,
+                                        color: widget.currentTabIndex == -1 
+                                          ? Colors.white 
+                                          : null,
                                       ),
                                     ),
                                   ),
                                   const SizedBox(height: 10),
                                   GestureDetector(
-  onTap: () {
-    _toggleFloatingNav();
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const MyTournamentsScreen(),
-      ),
-    );
-  },
-  child: Container(
- 
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(833), // Changed from 20 to 833 to match others
-      color: widget.currentTabIndex == 2 
-        ? const Color(0xFFFF6BDD) 
-        : const Color(0x26FF6BDD),
-    ),
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(833), // Added ClipRRect wrapper
-      child: BackdropFilter( // Added BackdropFilter
-        filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(833),
-            color: widget.currentTabIndex == 2 
-              ? const Color(0xFFFF6BDD) 
-              : const Color(0x26FF6BDD),
-          ),
-        child: SizedBox(
-  width: 48,
-  height: 48, // Added padding
-            child: SvgPicture.asset(
-              'assets/bottom_nav/badge_nav.svg',
-              fit: BoxFit.contain, // Changed from fill to contain
-              color: widget.currentTabIndex == 2 
-                ? const Color(0xFFFFFFFF) 
-                : null,
-            ),
-          ),
-        ),
-      ),
-    ),
-  ),
-),
+                                    onTap: () {
+                                      _toggleFloatingNav();
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => const MyTournamentsScreen(),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      width: 48,
+                                      height: 48,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(833),
+                                        color: widget.currentTabIndex == 2 
+                                          ? const Color(0xFFFF6BDD) 
+                                          : const Color(0x26FF6BDD),
+                                      ),
+                                      child: SvgPicture.asset(
+                                        'assets/bottom_nav/badge_nav.svg',
+                                        fit: BoxFit.contain,
+                                        color: widget.currentTabIndex == 2 
+                                          ? const Color(0xFFFFFFFF) 
+                                          : null,
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
